@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cat index.html.in | \
+    perl -MMIME::Base64=encode_base64 -wlpe '
+s!\$\{([^}]+)\}!enc($1)!e;
+sub enc{
+    open(my $f, "<", $_[0]) or die "open($_[0]): $!";
+    local $/;
+    my $e=encode_base64(<$f>);
+    close($f);
+    "data:image/png;base64,$e"
+}' > \
+    index.html
